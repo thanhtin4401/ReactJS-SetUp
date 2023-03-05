@@ -1,15 +1,23 @@
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
-import { Outlet, useNavigate } from "react-router-dom";
-function RequestPage() {
-  const auth = useSelector((state) => state.auth.isLoggedIn);
+import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "../../Hooks";
+import CookieSetUp from "../../Services/CookieService";
+
+const RequestPage = ({ children }) => {
+  const auth = useAppSelector((state) => state.auth.isLoggedIn);
+  const accessToken =
+    useAppSelector((state) => state.auth.accessToken) ===
+    CookieSetUp.get("accessToken");
   const navigate = useNavigate();
+
   useEffect(() => {
-    if (auth) {
-      navigate("/");
+    if (auth && accessToken) {
+      navigate("/home");
+    } else {
+      navigate("/login");
     }
-  }, [auth]);
-  return <Outlet />;
-}
+  }, [auth, accessToken, navigate]);
+  return <>{children}</>;
+};
 
 export default RequestPage;
